@@ -1,6 +1,6 @@
-# templates/workflows/service-check.yml - checks that service.yaml agrees with infra/map/services.yaml.
-# copy to .github/workflows/service-check.yml. needs the infra submodule, which is private:
-# `SUBMODULE_TOKEN` is a fine-grained token with read access to bylaaabs/infra (org secret, tbd).
+# templates/workflows/service-check.yml - checks that service.yaml agrees with map/map/services.yaml.
+# copy to .github/workflows/service-check.yml. needs the map submodule, which is private:
+# `SUBMODULE_TOKEN` is a fine-grained token with read access to bylaaabs/map (org secret, tbd).
 name: service check
 
 on:
@@ -22,4 +22,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node infra/scripts/check.mjs service.yaml
+      - run: node map/scripts/check.mjs service.yaml

@@ -13,7 +13,7 @@ three people in madrid making native tools, in the open, with no telemetry. the 
 - rust for cores and services, typescript for web front ends, swift / kotlin / winui only as the native layer on a rust core.
 - one repo per product, all its platforms inside; services in their own repo.
 - every piece of work has an issue; branches are `<type>/<slug>`; conventional commits; pull requests only, never a push to main; never merge without being asked.
-- `infra/` is the map of everything and is a submodule here; `service.yaml` at the root describes this repo and must agree with `infra/map/services.yaml`.
+- `map/` is the map of everything and is a submodule here; `service.yaml` at the root describes this repo and must agree with `map/map/services.yaml`.
 - `CLAUDE.md` is just `@AGENTS.md`. edit this file, not that one.
 
 ## this repository
