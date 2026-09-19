@@ -1,0 +1,8 @@
+name: brand
+hostname: null
+kind: data
+language: typescript
+build: npm run brand (inkscape)
+deploy: none - a git submodule of its consumers
+runs_on: null
+owner: brand
