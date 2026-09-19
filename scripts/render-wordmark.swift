@@ -3,7 +3,7 @@
 // set tight like terminaaal's wordmark: letters close up until they touch, and where a
 // round side meets its neighbour the earlier letter is carved back to leave an even gap.
 //
-//   swift scripts/render-wordmark.swift [path/to/Outfit-Variable.ttf] [preview.png]
+//   swift scripts/render-wordmark.swift [font.ttf] [preview.png] [text] [weight] [output.svg]
 //
 // Writes baaar/Assets.xcassets/Wordmark.imageset/wordmark.svg (letters white, the dot
 // #00B5E2). The asset renders as a template, so views tint it as one colour; drawn with
@@ -22,8 +22,8 @@ let fontPath = arguments.count > 1
     : root.appending(path: "baaar/Resources/Fonts/Outfit-Variable.ttf").path
 let previewPath = arguments.count > 2 ? arguments[2] : nil
 
-let text = "baaar."
-let weight: CGFloat = 700
+let text = CommandLine.arguments.count > 3 ? CommandLine.arguments[3] : "baaar."
+let weight: CGFloat = CommandLine.arguments.count > 4 ? CGFloat(Double(CommandLine.arguments[4]) ?? 700) : 700
 let size: CGFloat = 2000
 /// The gap left where letters meet, as a share of the x-height (terminaaal: 100 on a ~1000 x-height).
 let gapRatio: CGFloat = 0.1
@@ -116,7 +116,7 @@ for letter in letters {
 }
 svg += "</svg>\n"
 
-let output = root.appending(path: "baaar/Assets.xcassets/Wordmark.imageset/wordmark.svg")
+let output = CommandLine.arguments.count > 5 ? URL(fileURLWithPath: CommandLine.arguments[5]) : root.appending(path: "baaar/Assets.xcassets/Wordmark.imageset/wordmark.svg")
 try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
 try svg.write(to: output, atomically: true, encoding: .utf8)
 print("wrote \(output.path) (\(number(width)) x \(number(height)))")
