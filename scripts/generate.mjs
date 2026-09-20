@@ -8,8 +8,9 @@
 import { mkdir, readFile, writeFile, rm, readdir, stat } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = new URL('../', import.meta.url).pathname
+const root = fileURLToPath(new URL('../', import.meta.url))
 const gen = join(root, 'generated')
 const black = '#0a0a0a'
 const white = '#ffffff'
@@ -99,6 +100,29 @@ for (const product of products) {
   await emit(fav, 'favicon', c({ w: 64, h: 64, share: 0.8, radius: 12, optical: true }), [64, 32, 16])
   await emit(fav, 'apple-touch-icon', c({ w: 180, h: 180, share: 0.76, optical: true }), [180])
 
+  // icon: every size from the wordmark, square (the os rounds it), plus a native <product>.ico
+  // (every product ships a desktop app sooner or later, not just the studio)
+  const ic = await out(join(G, 'icon'))
+  await emit(ic, 'app-icon', c({ w: 1024, h: 1024, share: 0.72, optical: true }), [1024, 512, 256, 128, 64, 32, 16])
+  const icoSizes = [16, 32, 64, 128, 256]
+  const icoImgs = await Promise.all(icoSizes.map((s) => readFile(join(ic, `app-icon-${s}.png`))))
+  const icoHead = Buffer.alloc(6)
+  icoHead.writeUInt16LE(1, 2)
+  icoHead.writeUInt16LE(icoImgs.length, 4)
+  let icoOff = 6 + 16 * icoImgs.length
+  const icoEntries = icoImgs.map((img, i) => {
+    const e = Buffer.alloc(16)
+    e.writeUInt8(icoSizes[i] === 256 ? 0 : icoSizes[i], 0)
+    e.writeUInt8(icoSizes[i] === 256 ? 0 : icoSizes[i], 1)
+    e.writeUInt16LE(1, 4)
+    e.writeUInt16LE(32, 6)
+    e.writeUInt32LE(img.length, 8)
+    e.writeUInt32LE(icoOff, 12)
+    icoOff += img.length
+    return e
+  })
+  await writeFile(join(ic, `${product}.ico`), Buffer.concat([icoHead, ...icoEntries, ...icoImgs]))
+
   // og image: the wordmark on black, 1200 x 630
   const og = await out(join(G, 'og'))
   await emit(og, `${isStudio ? 'laaabs.com' : `${product}.app`}`, c({ w: 1200, h: 630, share: 0.42 }), [[1200, 630]])
@@ -108,32 +132,12 @@ for (const product of products) {
       const base = c({ w: 1200, h: 630, share: 0.42 }).replace('</svg>', `<text x="600" y="480" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="44" font-weight="500" fill="${white}" fill-opacity="0.55">${site}</text></svg>`)
       await emit(og, site, base, [[1200, 630]])
     }
-    // icon: every size from the wordmark, square (the os rounds it), .ico, android adaptive
-    const ic = await out(join(G, 'icon'))
-    await emit(ic, 'app-icon', c({ w: 1024, h: 1024, share: 0.72, optical: true }), [1024, 512, 256, 128, 64, 32, 16])
+    // app-icon-rounded and the android adaptive icon are studio-only for now
     await emit(ic, 'app-icon-rounded', c({ w: 1024, h: 1024, share: 0.72, optical: true, radius: 229 }), [1024, 512, 256, 180, 120])
     await emit(ic, 'android-foreground', c({ w: 1080, h: 1080, bg: 'none', share: 0.5, optical: true }), [1080, 432, 324, 216, 162, 108])
     await writeFile(join(ic, 'android-background.svg'), `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080"><rect width="1080" height="1080" fill="${black}"/></svg>\n`)
     png(join(ic, 'android-background.svg'), join(ic, 'android-background-1080.png'), 1080)
-    const icoSizes = [16, 32, 64, 128, 256]
-    const imgs = await Promise.all(icoSizes.map((s) => readFile(join(ic, `app-icon-${s}.png`))))
-    const head = Buffer.alloc(6)
-    head.writeUInt16LE(1, 2)
-    head.writeUInt16LE(imgs.length, 4)
-    let off = 6 + 16 * imgs.length
-    const entries = imgs.map((img, i) => {
-      const e = Buffer.alloc(16)
-      e.writeUInt8(icoSizes[i] === 256 ? 0 : icoSizes[i], 0)
-      e.writeUInt8(icoSizes[i] === 256 ? 0 : icoSizes[i], 1)
-      e.writeUInt16LE(1, 4)
-      e.writeUInt16LE(32, 6)
-      e.writeUInt32LE(img.length, 8)
-      e.writeUInt32LE(off, 12)
-      off += img.length
-      return e
-    })
-    await writeFile(join(ic, 'laaabs.ico'), Buffer.concat([head, ...entries, ...imgs]))
-    await writeFile(join(fav, 'favicon.ico'), Buffer.concat([head, ...entries, ...imgs]))
+    await writeFile(join(fav, 'favicon.ico'), Buffer.concat([icoHead, ...icoEntries, ...icoImgs]))
 
     // avatars: circle-safe, on black and on white
     const av = await out(join(G, 'avatar'))
