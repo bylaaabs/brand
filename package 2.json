@@ -1,0 +1,8 @@
+{
+  "name": "@bylaaabs/brand",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "brand": "node scripts/generate.mjs"
+  }
+}
