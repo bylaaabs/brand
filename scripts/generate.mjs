@@ -79,7 +79,8 @@ for (const product of products) {
   const src = join(root, product, 'vector', `${product}.svg`)
   const v = await vector(src)
   const isStudio = product === 'laaabs'
-  const dot = isStudio ? cyan : null
+  // every wordmark ends in the dot now, and the dot is always cyan
+  const dot = cyan
   const G = join(gen, product)
   const c = (o) => compose(v, { ...o, dot })
   await rm(G, { recursive: true, force: true })
@@ -88,8 +89,8 @@ for (const product of products) {
   const wm = await out(join(G, 'wordmark'))
   await emit(wm, `${product}-white`, doc(v, markup(v, white, dot)), [[2000, Math.round((2000 * v.vb[3]) / v.vb[2])]])
   await emit(wm, `${product}-black`, doc(v, markup(v, black, dot)), [[2000, Math.round((2000 * v.vb[3]) / v.vb[2])]])
+  await emit(wm, `${product}-all-white`, doc(v, markup(v, white, null)))
   if (isStudio) {
-    await emit(wm, `${product}-all-white`, doc(v, markup(v, white, null)))
     const tb = await vector(join(root, product, 'vector', 'things-by-laaabs.svg'))
     await emit(wm, 'things-by-laaabs', doc(tb, markup(tb, white, cyan)), [[2400, Math.round((2400 * tb.vb[3]) / tb.vb[2])]])
     await emit(wm, 'things-by-laaabs-all-white', doc(tb, markup(tb, white, null)))
@@ -188,7 +189,7 @@ for (const product of products) {
     }
   }
 
-  wordmarksTs.push(`  ${product}: { viewBox: [${v.vb.join(', ')}], letterHeight: ${isStudio ? 1452 : Math.round(v.vb[3] * 0.985)}, paths: [\n${v.paths.map((p, i) => `    { d: "${p.d}"${p.rule === 'nonzero' ? ', rule: "nonzero"' : ''}${isStudio && i === v.paths.length - 1 ? ', dot: true' : ''} },`).join('\n')}\n  ] },`)
+  wordmarksTs.push(`  ${product}: { viewBox: [${v.vb.join(', ')}], letterHeight: 1452, paths: [\n${v.paths.map((p, i) => `    { d: "${p.d}"${p.rule === 'nonzero' ? ', rule: "nonzero"' : ''}${i === v.paths.length - 1 ? ', dot: true' : ''} },`).join('\n')}\n  ] },`)
 }
 
 if (!only) {
