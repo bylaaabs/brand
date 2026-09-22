@@ -1,3 +1,0 @@
-[submodule "infra"]
-	path = infra
-	url = https://github.com/bylaaabs/infra.git
