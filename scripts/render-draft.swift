@@ -48,6 +48,12 @@ let gap = xHeight * gapRatio
 struct Letter {
     var path: CGPath
     let isDot: Bool
+    let isA: Bool
+}
+
+/// what a letter leaves around itself: its outline grown by the gap.
+func halo(_ path: CGPath) -> CGPath {
+    path.union(path.copy(strokingWithWidth: gap * 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
 }
 
 var characters = Array(text.utf16)
@@ -87,19 +93,28 @@ for (index, glyph) in glyphs.enumerated() {
     } else {
         penX = -bounds.minX
     }
-    pens.append(penX)
     var transform = CGAffineTransform(translationX: penX, y: 0)
-    let placed = outline.copy(using: &transform)!
-    letters.append(Letter(path: placed, isDot: character == "."))
+    var placed = outline.copy(using: &transform)!
+    // a pair with no a is never carved: when the tracking brings it closer than the gap (finaaance's
+    // f and i, n and c), the later letter moves right until the gap is even, and both stay whole.
+    if let previous = letters.last, !previous.isA, character != "a", character != "." {
+        while previous.path.intersects(halo(placed)) {
+            penX += 2
+            transform = CGAffineTransform(translationX: penX, y: 0)
+            placed = outline.copy(using: &transform)!
+        }
+    }
+    pens.append(penX)
+    letters.append(Letter(path: placed, isDot: character == ".", isA: character == "a"))
 }
 
 // Carve each letter back from the one after it, so touching shapes keep an even gap.
 for index in letters.indices.dropLast() {
     // the dot keeps its own distance, so it never carves the letter before it (the r's arm stays whole)
     if letters[index + 1].isDot { continue }
-    let next = letters[index + 1].path
-    let halo = next.union(next.copy(strokingWithWidth: gap * 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
-    letters[index].path = letters[index].path.subtracting(halo)
+    // only the a's carve and are carved: every other pair was set apart above.
+    guard letters[index].isA || letters[index + 1].isA else { continue }
+    letters[index].path = letters[index].path.subtracting(halo(letters[index + 1].path))
 }
 
 // MARK: - SVG
