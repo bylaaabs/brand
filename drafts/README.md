@@ -3,6 +3,7 @@
 wordmarks that do not exist in figma yet, rendered from outfit 700 by `scripts/render-draft.swift` so the web and the apps can use them. **not the brand**: each one is replaced by the vector ángel draws, and the generator switches to it on its own.
 
 - `taaab.svg`, `caaapture.svg`, `finaaance.svg` - 2026-09-30, for bylaaabs/laaabs.com#36. the real ones: bylaaabs/brand#13.
+- `swaaap.svg` - 2026-10-26, for swaaap's app and its icon (bylaaabs/brand#18). the real one: ángel's, when he draws it.
 
 how they are set, checked against the seven official marks (`laaabs.`, `terminaaal.` and `baaar.` come out within 4 units of the figma width, the widest miss is `clipboaaard.` at 0.9 %):
 
