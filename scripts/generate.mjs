@@ -28,6 +28,9 @@ const source = async (product) => {
 }
 const only = process.argv[2]
 
+// the design tokens first: plain node, nothing to rasterise (scripts/tokens.mjs)
+if (!only) await import('./tokens.mjs')
+
 /** the svg's paths as [{ d, rule }], sorted left to right, plus its viewBox */
 async function vector(file) {
   const svg = await readFile(file, 'utf8')

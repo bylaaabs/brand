@@ -18,6 +18,6 @@ three people in madrid making native tools, in the open, with no telemetry. the 
 
 ## this repository
 
-the brand. the official folders (`laaabs/`, `baaar/`, ...) hold what ángel exports from figma by hand and are never written by a script or an agent: a change there is a design decision, made by him. `generated/` is written only by `scripts/generate.mjs` from the vectors; never edit a generated file, fix the script and rerun. read `README.md` for the rules of the brand and the tree.
+the brand. the official folders (`laaabs/`, `baaar/`, ...) hold what ángel exports from figma by hand and are never written by a script or an agent: a change there is a design decision, made by him. `generated/` is written only by `scripts/generate.mjs` from the vectors (and `generated/tokens/` by `scripts/tokens.mjs` from `tokens/tokens.json`, the one source of the colours and fonts of every kit); never edit a generated file, fix the script and rerun. read `README.md` for the rules of the brand and the tree.
 
 when a vector changes: rerun the script, commit the whole `generated/` folder with it, open a pull request. consumers move their submodule pointer on their own.

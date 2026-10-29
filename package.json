@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "brand": "node scripts/generate.mjs"
+    "brand": "node scripts/generate.mjs",
+    "tokens": "node scripts/tokens.mjs"
   }
 }
