@@ -15,7 +15,7 @@ const gen = join(root, 'generated')
 const black = '#0a0a0a'
 const white = '#ffffff'
 const cyan = '#00b5e2'
-const products = ['laaabs', 'baaar', 'haaarness', 'speaaak', 'islaaand', 'clipboaaard', 'terminaaal', 'taaab', 'caaapture', 'finaaance', 'swaaap', 'usaaage']
+const products = ['laaabs', 'baaar', 'haaarness', 'speaaak', 'islaaand', 'clipboaaard', 'terminaaal', 'taaab', 'caaapture', 'finaaance', 'swaaap', 'usaaage', 'releaaase', 'paaager']
 /** the official vector, or the draft while ángel has not drawn it yet (drafts/README.md) */
 const source = async (product) => {
   const official = join(root, product, 'vector', `${product}.svg`)
