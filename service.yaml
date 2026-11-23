@@ -1,3 +1,4 @@
+# service.yaml - what this repo is. the map (bylaaabs/map) stays private and this repo is public, so it is not a submodule here and ci does not check this file against it. keep it in step with `map/services.yaml` by hand.
 name: brand
 hostname: null
 kind: data
